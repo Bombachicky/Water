@@ -1,0 +1,27 @@
+{
+  "name": "water",
+  "version": "1.0.0",
+  "description": "Simulating water using three.js and Blender",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bombachicky/Water.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Bombachicky/Water/issues"
+  },
+  "homepage": "https://github.com/Bombachicky/Water#readme",
+  "dependencies": {
+    "three": "^0.182.0",
+    "vite": "^7.3.1"
+  }
+}
