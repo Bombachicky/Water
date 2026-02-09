@@ -22,16 +22,48 @@ export default class Renderer
         })
         this.instance.setSize(this.sizes.width, this.sizes.height)
         this.instance.setPixelRatio(this.sizes.pixelRatio)
+
+        this.depthTarget = new THREE.WebGLRenderTarget(
+            this.sizes.width * this.sizes.pixelRatio, 
+            this.sizes.height * this.sizes.pixelRatio, 
+            {
+                depthTexture: new THREE.DepthTexture()
+            })
+        this.depthTexture = this.depthTarget.depthTexture
+
+        this.normalsMaterial = new THREE.MeshNormalMaterial()
+        this.normalsTarget = new THREE.WebGLRenderTarget(
+            this.sizes.width * this.sizes.pixelRatio, 
+            this.sizes.height * this.sizes.pixelRatio
+        )
+        this.normalsTexture = this.normalsTarget.texture
     }
 
     resize()
     {
         this.instance.setSize(this.sizes.width, this.sizes.height)
         this.instance.setPixelRatio(this.sizes.pixelRatio)
+        this.renderTarget.setSize(this.sizes.width, this.sizes.height)
     }
 
     update()
     {
+        // layer 0 only - excludes water)
+        this.camera.instance.layers.set(0)
+
+        // Render normals
+        this.scene.overrideMaterial = this.normalsMaterial
+        this.instance.setRenderTarget(this.normalsTarget)
+        this.instance.render(this.scene, this.camera.instance)
+        this.scene.overrideMaterial = null
+
+        // Render depth
+        this.instance.setRenderTarget(this.depthTarget)
+        this.instance.render(this.scene, this.camera.instance)
+
+        // Render to screen (all layers - includes water)
+        this.camera.instance.layers.enableAll()
+        this.instance.setRenderTarget(null)
         this.instance.render(this.scene, this.camera.instance)
     }
 }
