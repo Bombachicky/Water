@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 import Experience from "../Experience";
-import waterVertexShader from '../../shaders/water/vertex.glsl'
-import waterFragmentShader from '../../shaders/water/fragment.glsl'
+import vertexShader from '../../shaders/water/vertex.glsl'
+import fragmentShader from '../../shaders/water/fragment.glsl'
 
 export default class Water {
     constructor() {
@@ -29,8 +29,8 @@ export default class Water {
         const camera = this.experience.camera.instance
         
         this.material = new THREE.ShaderMaterial({
-            vertexShader: waterVertexShader,
-            fragmentShader: waterFragmentShader,
+            vertexShader,
+            fragmentShader,
             side: THREE.DoubleSide,
             uniforms: {
                 uDepthGradientShallow: { value: new THREE.Color(0.325, 0.807, 0.971) },
@@ -49,7 +49,8 @@ export default class Water {
                 uSurfaceNoiseScroll: { value: new THREE.Vector2(0.03, 0.03) },
                 uTime: { value: 0 },
                 uSurfaceDistortion: { value: null },
-                uSurfaceDistortionAmount: { value: 0.27 }
+                uSurfaceDistortionAmount: { value: 0.27 },
+                uRippleTexture: { value: this.renderer.rippleTexture }
             }
         })
     }

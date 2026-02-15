@@ -13,6 +13,7 @@ uniform float uTime;
 uniform sampler2D uSurfaceDistortion;
 uniform float uSurfaceDistortionAmount;
 uniform sampler2D uNormalsTexture;
+uniform sampler2D uRippleTexture;
 
 varying vec2 vUv;
 varying vec4 vScreenPos;
@@ -47,12 +48,15 @@ void main() {
     float foamDepthDifference = clamp(depthDifference / foamDistance, 0.0, 1.0);
     float surfaceNoiseCutoff = foamDepthDifference * uSurfaceNoiseCutoff;
 
+    vec2 rippleUV = screenUV * 0.5 + 0.5;
+    float ripples = texture2D(uRippleTexture, rippleUV).b;
+    ripples = step(0.99, ripples * 1.9);
+
     // Apply noise, distortion, and animation
     vec2 distortSample = (texture2D(uSurfaceDistortion, vUv) * 2.0 - 1.0).xy * uSurfaceDistortionAmount;
-    vec2 noiseUV = vNoiseUV + uTime * uSurfaceNoiseScroll + distortSample;
+    vec2 noiseUV = vNoiseUV + uTime * uSurfaceNoiseScroll + distortSample + ripples * 0.1;
     float surfaceNoiseSample = texture2D(uSurfaceNoise, noiseUV).r;
     float surfaceNoise = smoothstep(surfaceNoiseCutoff - SMOOTHSTEP_AA, surfaceNoiseCutoff + SMOOTHSTEP_AA, surfaceNoiseSample);
 
-
-    gl_FragColor = vec4(waterColor + surfaceNoise, 1.0);
+    gl_FragColor = vec4(waterColor + surfaceNoise + ripples, 1.0);
 }

@@ -23,6 +23,13 @@ export default class Renderer
         this.instance.setSize(this.sizes.width, this.sizes.height)
         this.instance.setPixelRatio(this.sizes.pixelRatio)
 
+        this.rippleTarget = new THREE.WebGLRenderTarget(
+            this.sizes.width * this.sizes.pixelRatio, 
+            this.sizes.height * this.sizes.pixelRatio
+        )
+        this.rippleTexture = this.rippleTarget.texture
+
+
         this.depthTarget = new THREE.WebGLRenderTarget(
             this.sizes.width * this.sizes.pixelRatio, 
             this.sizes.height * this.sizes.pixelRatio, 
@@ -43,7 +50,6 @@ export default class Renderer
     {
         this.instance.setSize(this.sizes.width, this.sizes.height)
         this.instance.setPixelRatio(this.sizes.pixelRatio)
-        this.renderTarget.setSize(this.sizes.width, this.sizes.height)
     }
 
     update()
@@ -61,8 +67,14 @@ export default class Renderer
         this.instance.setRenderTarget(this.depthTarget)
         this.instance.render(this.scene, this.camera.instance)
 
-        // Render to screen (all layers - includes water)
-        this.camera.instance.layers.enableAll()
+        // Render ripples (layer 2 only)
+        this.camera.instance.layers.set(2)
+        this.instance.setRenderTarget(this.rippleTarget)
+        this.instance.render(this.scene, this.camera.instance)
+
+        // Render to screen (layers 0 + 1 + 2 for debugging)
+        this.camera.instance.layers.set(0)
+        this.camera.instance.layers.enable(1)
         this.instance.setRenderTarget(null)
         this.instance.render(this.scene, this.camera.instance)
     }
